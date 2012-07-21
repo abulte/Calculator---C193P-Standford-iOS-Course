@@ -16,6 +16,7 @@
 - (void)clearStack;
 
 // Class Methods
+// programmable feature
 @property (nonatomic, readonly) id program;
 
 + (NSString *)descriptionOfProgram:(id)program;
