@@ -79,14 +79,45 @@
     return result;
 }
 
++ (double)runProgram:(id)program
+ usingVariableValues:(NSDictionary *)variableValues
+{
+    NSArray *operations = [[NSArray alloc] initWithObjects:@"sqrt", @"Pi", @"+", @"-", @"/",@"*", @"cos", @"sin", nil];
+    NSMutableArray *stack = [[NSMutableArray alloc] init];
+    if ([program isKindOfClass:[NSArray class]]) {
+        // iterate through stack and replace variables by their values
+        for (id programElement in program) {
+            // is a number, just build the stack
+            if ([programElement isKindOfClass:[NSValue class]]) {
+                [stack addObject:programElement];
+            }
+            else if ([programElement isKindOfClass:[NSString class]]) {
+                // ignore operations strings
+                if (![operations containsObject:programElement]) {
+                    NSValue *variableValue = [variableValues valueForKey:programElement];
+                    if (!variableValue) variableValue = 0;
+                    [stack addObject:variableValue];
+                }
+                else {
+                    [stack addObject:programElement];
+                }
+            }
+        }
+    }
+    NSLog(@"Stack : %@", stack);
+    return [self popOperandOffProgramStack:stack];
+}
 
 + (double)runProgram:(id)program;
 {
-    NSMutableArray *stack;
-    if ([program isKindOfClass:[NSArray class]]) {
-        stack = [program mutableCopy];
-    }
-    return [self popOperandOffProgramStack:stack];
+    NSDictionary *variableValues;
+    return [self runProgram:program usingVariableValues:variableValues];
+}
+
++ (NSSet *)variablesUsedInProgram:(id)program
+{
+    NSSet *variables;
+    return variables;
 }
 
 
