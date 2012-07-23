@@ -10,6 +10,10 @@
 
 @interface CalculatorBrain()
 @property (nonatomic, strong) NSMutableArray *programStack;
++ (BOOL)isOperation:(NSString *)string;
++ (BOOL)isSingleOperandOperation:(NSString *)string;
++ (BOOL)isDoubleOperandOperation:(NSString *)string;
+//+ ()descriptionOfTopOfStack:
 @end
 
 @implementation CalculatorBrain
@@ -31,22 +35,31 @@
     return [self.programStack copy];
 }
 
-// suboptimal ! retourne une nouvelle instance à chaque fois
-// mais on m'impose les méthodes de class, donc pas le choix (pas de _operations possible)
-+ (NSArray *)possibleOperations
++ (BOOL)isOperation:(NSString *)string
 {
-    return [[NSArray alloc] initWithObjects:@"sqrt", @"Pi", @"+", @"-", @"/",@"*", @"cos", @"sin", nil];
+    if ([CalculatorBrain isSingleOperandOperation:string] || 
+        [CalculatorBrain isDoubleOperandOperation:string]) 
+        return TRUE;
+    else return FALSE;
+}
+
++ (BOOL)isSingleOperandOperation:(NSString *)string
+{
+    NSArray *operations = [[NSArray alloc] initWithObjects:@"sqrt", @"Pi", @"cos", @"sin", nil];
+    
+    if ([operations containsObject:string]) return TRUE;
+    else return FALSE;
+}
+
++ (BOOL)isDoubleOperandOperation:(NSString *)string;
+{
+    NSArray *operations = [[NSArray alloc] initWithObjects:@"+", @"-", @"/",@"*", nil];
+    
+    if ([operations containsObject:string]) return TRUE;
+    else return FALSE;    
 }
 
 /*** Class methods ***/
-
-+ (NSString *)descriptionOfProgram:(id)program
-{
-    //TODO
-    NSString *description = @"TODO";
-    return description;
-
-}
 
 + (double)popOperandOffProgramStack:(NSMutableArray *)stack
 {
@@ -99,7 +112,7 @@
             }
             else if ([programElement isKindOfClass:[NSString class]]) {
                 // ignore operations strings
-                if (![[CalculatorBrain possibleOperations] containsObject:programElement]) {
+                if (![CalculatorBrain isOperation:programElement]) {
                     NSValue *variableValue = [variableValues valueForKey:programElement];
                     if (!variableValue) variableValue = 0;
                     [stack addObject:variableValue];
@@ -125,14 +138,49 @@
     if ([program isKindOfClass:[NSArray class]]) {
         for (id programElement in program) {
             if ([programElement isKindOfClass:[NSString class]]) {
-                if (![[CalculatorBrain possibleOperations] containsObject:programElement]) {
+                if (![CalculatorBrain isOperation:programElement]) {
                     [variables addObject:programElement];
                 }
             }
         }
     }
     //return [[NSSet alloc] initWithSet:variables];
-    return [variables copy];
+    if ([variables count] > 0){
+        return [variables copy];
+    }
+    else {
+        return nil;
+    }
+}
+
+// displays (3 + 3) * 5
+
++ (NSString *)descriptionOfProgram:(id)program
+{
+    NSString *description = [[NSString alloc] init];
+    /*
+    if ([program isKindOfClass:[NSArray class]]) {
+        for (id programElement in program) {
+            // valeur
+            if ([programElement isKindOfClass:[NSValue class]]) {
+                [stack addObject:programElement];
+            }
+            else if ([programElement isKindOfClass:[NSString class]]) {
+                // variable
+                if (![CalculatorBrain isOperation:programElement]) {
+                    NSValue *variableValue = [variableValues valueForKey:programElement];
+                    if (!variableValue) variableValue = 0;
+                    [stack addObject:variableValue];
+                }
+                // operations
+                else {
+                    [stack addObject:programElement];
+                }
+            }
+        }
+    }
+    */
+    return description;
 }
 
 
