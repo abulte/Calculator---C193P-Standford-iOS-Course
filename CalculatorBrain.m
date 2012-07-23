@@ -31,6 +31,13 @@
     return [self.programStack copy];
 }
 
+// suboptimal ! retourne une nouvelle instance à chaque fois
+// mais on m'impose les méthodes de class, donc pas le choix (pas de _operations possible)
++ (NSArray *)possibleOperations
+{
+    return [[NSArray alloc] initWithObjects:@"sqrt", @"Pi", @"+", @"-", @"/",@"*", @"cos", @"sin", nil];
+}
+
 /*** Class methods ***/
 
 + (NSString *)descriptionOfProgram:(id)program
@@ -82,7 +89,6 @@
 + (double)runProgram:(id)program
  usingVariableValues:(NSDictionary *)variableValues
 {
-    NSArray *operations = [[NSArray alloc] initWithObjects:@"sqrt", @"Pi", @"+", @"-", @"/",@"*", @"cos", @"sin", nil];
     NSMutableArray *stack = [[NSMutableArray alloc] init];
     if ([program isKindOfClass:[NSArray class]]) {
         // iterate through stack and replace variables by their values
@@ -93,7 +99,7 @@
             }
             else if ([programElement isKindOfClass:[NSString class]]) {
                 // ignore operations strings
-                if (![operations containsObject:programElement]) {
+                if (![[CalculatorBrain possibleOperations] containsObject:programElement]) {
                     NSValue *variableValue = [variableValues valueForKey:programElement];
                     if (!variableValue) variableValue = 0;
                     [stack addObject:variableValue];
@@ -104,7 +110,6 @@
             }
         }
     }
-    NSLog(@"Stack : %@", stack);
     return [self popOperandOffProgramStack:stack];
 }
 
@@ -116,8 +121,18 @@
 
 + (NSSet *)variablesUsedInProgram:(id)program
 {
-    NSSet *variables;
-    return variables;
+    NSMutableSet *variables = [[NSMutableSet alloc] init];
+    if ([program isKindOfClass:[NSArray class]]) {
+        for (id programElement in program) {
+            if ([programElement isKindOfClass:[NSString class]]) {
+                if (![[CalculatorBrain possibleOperations] containsObject:programElement]) {
+                    [variables addObject:programElement];
+                }
+            }
+        }
+    }
+    //return [[NSSet alloc] initWithSet:variables];
+    return [variables copy];
 }
 
 

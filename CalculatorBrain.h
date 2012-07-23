@@ -24,5 +24,6 @@
 + (double)runProgram:(id)program
  usingVariableValues:(NSDictionary *)variableValues;
 + (NSSet *)variablesUsedInProgram:(id)program;
++ (NSArray *)possibleOperations;
 
 @end
