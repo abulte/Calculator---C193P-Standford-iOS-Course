@@ -10,10 +10,12 @@
 
 @interface CalculatorBrain()
 @property (nonatomic, strong) NSMutableArray *programStack;
+
 + (BOOL)isOperation:(NSString *)string;
 + (BOOL)isSingleOperandOperation:(NSString *)string;
 + (BOOL)isDoubleOperandOperation:(NSString *)string;
-//+ ()descriptionOfTopOfStack:
++ (NSString *)descriptionOfTopOfStack:(id)stack;
+
 @end
 
 @implementation CalculatorBrain
@@ -45,7 +47,8 @@
 
 + (BOOL)isSingleOperandOperation:(NSString *)string
 {
-    NSArray *operations = [[NSArray alloc] initWithObjects:@"sqrt", @"Pi", @"cos", @"sin", nil];
+    // @"Pi", ?
+    NSArray *operations = [[NSArray alloc] initWithObjects:@"sqrt", @"cos", @"sin", nil];
     
     if ([operations containsObject:string]) return TRUE;
     else return FALSE;
@@ -129,6 +132,7 @@
 + (double)runProgram:(id)program;
 {
     NSDictionary *variableValues;
+    //NSString *description = [CalculatorBrain descriptionOfProgram:program];
     return [self runProgram:program usingVariableValues:variableValues];
 }
 
@@ -145,41 +149,44 @@
         }
     }
     //return [[NSSet alloc] initWithSet:variables];
-    if ([variables count] > 0){
-        return [variables copy];
-    }
-    else {
-        return nil;
-    }
+    if ([variables count] > 0) return [variables copy];
+    else return nil;
 }
+
++ (NSString *)descriptionOfTopOfStack:(NSMutableArray *)stack
+{
+    NSString  *topDescription = @"";
+    
+    id topOfStack = [stack lastObject];
+    if (topOfStack) [stack removeLastObject];
+    
+    if ([topOfStack isKindOfClass:[NSString class]]) {
+        if ([CalculatorBrain isSingleOperandOperation:topOfStack]) {
+            NSString *lastValue = [CalculatorBrain descriptionOfTopOfStack:stack];
+            topDescription = [NSString stringWithFormat:@"%@(%@)", topOfStack, lastValue];
+        }
+        else if ([CalculatorBrain isDoubleOperandOperation:topOfStack]) {
+            NSString *lastValue = [CalculatorBrain descriptionOfTopOfStack:stack];
+            NSString *beforeLastValue = [CalculatorBrain descriptionOfTopOfStack:stack];
+            topDescription = [NSString stringWithFormat:@"(%@ %@ %@)", beforeLastValue, topOfStack, lastValue];            
+        }
+    }
+    // return value as string
+    else if ([topOfStack isKindOfClass:[NSNumber class]]){
+        return [NSString stringWithFormat:@"%@", topOfStack];
+    }
+    
+    return topDescription;
+}
+
 
 // displays (3 + 3) * 5
 
 + (NSString *)descriptionOfProgram:(id)program
 {
     NSString *description = [[NSString alloc] init];
-    /*
-    if ([program isKindOfClass:[NSArray class]]) {
-        for (id programElement in program) {
-            // valeur
-            if ([programElement isKindOfClass:[NSValue class]]) {
-                [stack addObject:programElement];
-            }
-            else if ([programElement isKindOfClass:[NSString class]]) {
-                // variable
-                if (![CalculatorBrain isOperation:programElement]) {
-                    NSValue *variableValue = [variableValues valueForKey:programElement];
-                    if (!variableValue) variableValue = 0;
-                    [stack addObject:variableValue];
-                }
-                // operations
-                else {
-                    [stack addObject:programElement];
-                }
-            }
-        }
-    }
-    */
+    NSMutableArray *stack = [program mutableCopy];
+    description = [CalculatorBrain descriptionOfTopOfStack:stack];
     return description;
 }
 
