@@ -15,6 +15,7 @@
 + (BOOL)isSingleOperandOperation:(NSString *)string;
 + (BOOL)isDoubleOperandOperation:(NSString *)string;
 + (BOOL)isNoOperandOperation:(NSString *)string;
++ (NSString *)clearParenthesis:(NSString *)string;
 + (NSString *)descriptionOfTopOfStack:(id)stack;
 
 @end
@@ -192,16 +193,33 @@
 }
 
 
-// displays (3 + 3) * 5
+/**
+ Remove ( and ) from ( string )
+ */
++ (NSString *)clearParenthesis:(NSString *)string
+{
+    string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+    string = [string stringByReplacingCharactersInRange:NSMakeRange([string length]-1, 1) withString:@""];
+    return string;
+}
 
+/**
+ Displays (3 + 3) * 5, (4 + 3) * 12
+ */
 + (NSString *)descriptionOfProgram:(id)program
 {
-    NSString *description = [[NSString alloc] init];
+    NSString *description = @"";
     NSMutableArray *stack = [program mutableCopy];
-    description = [CalculatorBrain descriptionOfTopOfStack:stack];
-    // remove extra ( )
-    description = [description stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-    description = [description stringByReplacingCharactersInRange:NSMakeRange([description length]-1, 1) withString:@""];
+    
+    while ([stack count]) {
+        if (description == @"") {
+            description = [CalculatorBrain clearParenthesis:[CalculatorBrain descriptionOfTopOfStack:stack]];
+        }
+        else {
+            description = [description stringByAppendingFormat:@", %@", [self descriptionOfTopOfStack:stack]];
+        }
+    }
+
     return description;
 }
 
@@ -227,10 +245,12 @@
     return [[self class] runProgram:self.program];
 }
 
+/**
+ Clears the stack
+ */
 - (void)clearStack
 {
     self.programStack = nil;
 }
-
 
 @end
