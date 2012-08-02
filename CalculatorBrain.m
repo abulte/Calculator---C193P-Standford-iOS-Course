@@ -14,6 +14,7 @@
 + (BOOL)isOperation:(NSString *)string;
 + (BOOL)isSingleOperandOperation:(NSString *)string;
 + (BOOL)isDoubleOperandOperation:(NSString *)string;
++ (BOOL)isNoOperandOperation:(NSString *)string;
 + (NSString *)descriptionOfTopOfStack:(id)stack;
 
 @end
@@ -40,14 +41,22 @@
 + (BOOL)isOperation:(NSString *)string
 {
     if ([CalculatorBrain isSingleOperandOperation:string] || 
-        [CalculatorBrain isDoubleOperandOperation:string]) 
+        [CalculatorBrain isDoubleOperandOperation:string] ||
+        [CalculatorBrain isNoOperandOperation:string])
         return TRUE;
+    else return FALSE;
+}
+
++ (BOOL)isNoOperandOperation:(NSString *)string
+{
+    NSArray *operations = [[NSArray alloc] initWithObjects:@"Pi", @"cos", @"sin", nil];
+    
+    if ([operations containsObject:string]) return TRUE;
     else return FALSE;
 }
 
 + (BOOL)isSingleOperandOperation:(NSString *)string
 {
-    // @"Pi", ?
     NSArray *operations = [[NSArray alloc] initWithObjects:@"sqrt", @"cos", @"sin", nil];
     
     if ([operations containsObject:string]) return TRUE;
@@ -132,7 +141,8 @@
 + (double)runProgram:(id)program;
 {
     NSDictionary *variableValues;
-    //NSString *description = [CalculatorBrain descriptionOfProgram:program];
+    NSLog(@"Variables : %@", [CalculatorBrain variablesUsedInProgram:program]);
+    NSLog(@"Description : %@",[CalculatorBrain descriptionOfProgram:program]);
     return [self runProgram:program usingVariableValues:variableValues];
 }
 
@@ -170,12 +180,14 @@
             NSString *beforeLastValue = [CalculatorBrain descriptionOfTopOfStack:stack];
             topDescription = [NSString stringWithFormat:@"(%@ %@ %@)", beforeLastValue, topOfStack, lastValue];            
         }
+        else if ([CalculatorBrain isNoOperandOperation:topOfStack]) {
+            topDescription = topOfStack;
+        }
     }
     // return value as string
     else if ([topOfStack isKindOfClass:[NSNumber class]]){
-        return [NSString stringWithFormat:@"%@", topOfStack];
+        topDescription = [NSString stringWithFormat:@"%@", topOfStack];
     }
-    
     return topDescription;
 }
 
@@ -187,6 +199,9 @@
     NSString *description = [[NSString alloc] init];
     NSMutableArray *stack = [program mutableCopy];
     description = [CalculatorBrain descriptionOfTopOfStack:stack];
+    // remove extra ( )
+    description = [description stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+    description = [description stringByReplacingCharactersInRange:NSMakeRange([description length]-1, 1) withString:@""];
     return description;
 }
 
