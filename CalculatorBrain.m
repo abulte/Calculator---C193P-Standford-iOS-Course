@@ -197,9 +197,10 @@
  Remove ( and ) from ( string )
  */
 + (NSString *)clearParenthesis:(NSString *)string
-{
-    string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-    string = [string stringByReplacingCharactersInRange:NSMakeRange([string length]-1, 1) withString:@""];
+{    
+    // use stringByReplacingOccurrencesOfString with options
+    string = [string stringByReplacingOccurrencesOfString:@"(" withString:@"" options:0 range:NSMakeRange(0, 1)];
+    string = [string stringByReplacingOccurrencesOfString:@")" withString:@"" options:0 range:NSMakeRange([string length]-1, 1)];
     return string;
 }
 

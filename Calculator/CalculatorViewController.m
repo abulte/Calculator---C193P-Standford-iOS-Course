@@ -50,7 +50,7 @@
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsEnteringANumber = NO;
     self.hasEnteredDot = NO;
-    self.history.text = [self.history.text stringByAppendingString:[self.display.text stringByAppendingString:@" "]];
+    self.history.text = [CalculatorBrain descriptionOfProgram:[[self brain] program]];
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
@@ -59,7 +59,7 @@
     }
     double result = [self.brain performOperation:sender.currentTitle];
     self.display.text = [NSString stringWithFormat:@"%g", result];
-    self.history.text = [self.history.text stringByAppendingString:[sender.currentTitle stringByAppendingString:@" "]];
+    self.history.text = [CalculatorBrain descriptionOfProgram:[[self brain] program]];
 }
 
 - (IBAction)clearPressed {
