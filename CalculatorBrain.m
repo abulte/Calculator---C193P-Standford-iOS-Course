@@ -142,8 +142,8 @@
 + (double)runProgram:(id)program;
 {
     NSDictionary *variableValues;
-    NSLog(@"Variables : %@", [CalculatorBrain variablesUsedInProgram:program]);
-    NSLog(@"Description : %@",[CalculatorBrain descriptionOfProgram:program]);
+    //NSLog(@"Variables : %@", [CalculatorBrain variablesUsedInProgram:program]);
+    //NSLog(@"Description : %@",[CalculatorBrain descriptionOfProgram:program]);
     return [self runProgram:program usingVariableValues:variableValues];
 }
 
@@ -184,6 +184,10 @@
         else if ([CalculatorBrain isNoOperandOperation:topOfStack]) {
             topDescription = topOfStack;
         }
+        // variable case, return as string
+        else {
+            topDescription = topOfStack;
+        }
     }
     // return value as string
     else if ([topOfStack isKindOfClass:[NSNumber class]]){
@@ -211,7 +215,8 @@
 {
     NSString *description = @"";
     NSMutableArray *stack = [program mutableCopy];
-    
+    description = [CalculatorBrain clearParenthesis:[CalculatorBrain descriptionOfTopOfStack:stack]];
+    /*
     while ([stack count]) {
         if (description == @"") {
             description = [CalculatorBrain clearParenthesis:[CalculatorBrain descriptionOfTopOfStack:stack]];
@@ -220,6 +225,7 @@
             description = [description stringByAppendingFormat:@", %@", [self descriptionOfTopOfStack:stack]];
         }
     }
+    */
 
     return description;
 }
@@ -234,16 +240,22 @@
     return [lastOperand doubleValue];
 }
 
+- (void)pushVariable:(NSString *)operand
+{
+    [self.programStack addObject:operand];
+}
+
+
 - (void)pushOperand:(double)operand
 {
     [self.programStack addObject:[NSNumber numberWithDouble:operand]];
 }
 
 
-- (double)performOperation:(NSString *)operation
+- (double)performOperation:(NSString *)operation withVariables:(NSDictionary *)variables
 {
     [self.programStack addObject:operation];
-    return [[self class] runProgram:self.program];
+    return [[self class] runProgram:self.program usingVariableValues:variables];
 }
 
 /**

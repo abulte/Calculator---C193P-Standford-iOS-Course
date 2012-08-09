@@ -14,6 +14,7 @@
 @property (nonatomic) BOOL userIsEnteringANumber;
 @property (nonatomic) BOOL hasEnteredDot;
 @property (nonatomic, strong) CalculatorBrain *brain;
+@property (nonatomic, strong) NSDictionary *testVariableValues;
 
 @end
 
@@ -24,6 +25,14 @@
 @synthesize userIsEnteringANumber = _userIsEnteringANumber;
 @synthesize hasEnteredDot = _hasEnteredDot;
 @synthesize brain = _brain;
+@synthesize testVariableValues = _testVariableValues;
+
+- (NSDictionary *)testVariableValues
+{
+    if(!_testVariableValues) _testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:2], @"x", [NSNumber numberWithInt:5], @"y", [NSNumber numberWithInt:7], @"y", [NSNumber numberWithInt:19], @"foo",nil];
+    
+    return _testVariableValues;
+}
 
 - (CalculatorBrain *)brain
 {
@@ -46,6 +55,13 @@
     }
 }
 
+- (IBAction)variablePressed:(UIButton *)sender {
+    [self.brain pushVariable:sender.currentTitle];
+    self.userIsEnteringANumber = NO;
+    self.hasEnteredDot = NO;
+    self.history.text = [CalculatorBrain descriptionOfProgram:[[self brain] program]];
+}
+
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsEnteringANumber = NO;
@@ -57,7 +73,7 @@
     if (self.userIsEnteringANumber){
         [self enterPressed];
     }
-    double result = [self.brain performOperation:sender.currentTitle];
+    double result = [self.brain performOperation:sender.currentTitle withVariables:self.testVariableValues];
     self.display.text = [NSString stringWithFormat:@"%g", result];
     self.history.text = [CalculatorBrain descriptionOfProgram:[[self brain] program]];
 }

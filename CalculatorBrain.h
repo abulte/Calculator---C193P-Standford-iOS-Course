@@ -12,7 +12,8 @@
 
 // Instance Methods
 - (void)pushOperand:(double)operand;
-- (double)performOperation:(NSString *)operation;
+- (void)pushVariable:(NSString *)operand;
+- (double)performOperation:(NSString *)operation withVariables:(NSDictionary *)variables;
 - (void)clearStack;
 
 // Class Methods
