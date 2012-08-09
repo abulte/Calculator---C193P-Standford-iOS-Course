@@ -22,14 +22,24 @@
 
 @synthesize display = _display;
 @synthesize history = _history;
+@synthesize variableValuesDisplay = variableValuesDisplay;
 @synthesize userIsEnteringANumber = _userIsEnteringANumber;
 @synthesize hasEnteredDot = _hasEnteredDot;
 @synthesize brain = _brain;
 @synthesize testVariableValues = _testVariableValues;
 
+
 - (NSDictionary *)testVariableValues
 {
     if(!_testVariableValues) _testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:2], @"x", [NSNumber numberWithInt:5], @"y", [NSNumber numberWithInt:7], @"y", [NSNumber numberWithInt:19], @"foo",nil];
+    
+    // on affiche leurs valeurs dans le label qui va bien
+    NSString *displayValue = @"";
+    for (NSString *key in _testVariableValues) {
+        displayValue = [displayValue stringByAppendingString:
+                        [NSString stringWithFormat:@"%@ = %@   ", key, [_testVariableValues objectForKey:key]]];
+    }
+    self.variableValuesDisplay.text = displayValue;
     
     return _testVariableValues;
 }
