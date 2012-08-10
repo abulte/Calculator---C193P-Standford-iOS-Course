@@ -202,9 +202,11 @@
  */
 + (NSString *)clearParenthesis:(NSString *)string
 {    
-    // use stringByReplacingOccurrencesOfString with options
-    string = [string stringByReplacingOccurrencesOfString:@"(" withString:@"" options:0 range:NSMakeRange(0, 1)];
-    string = [string stringByReplacingOccurrencesOfString:@")" withString:@"" options:0 range:NSMakeRange([string length]-1, 1)];
+    if ([string hasPrefix:@"("]) {
+        string = [string stringByReplacingOccurrencesOfString:@"(" withString:@"" options:0 range:NSMakeRange(0, 1)];
+        string = [string stringByReplacingOccurrencesOfString:@")" withString:@"" options:0 range:NSMakeRange([string length]-1, 1)];
+    }
+
     return string;
 }
 
@@ -215,8 +217,8 @@
 {
     NSString *description = @"";
     NSMutableArray *stack = [program mutableCopy];
-    description = [CalculatorBrain clearParenthesis:[CalculatorBrain descriptionOfTopOfStack:stack]];
-    /*
+    //description = [CalculatorBrain clearParenthesis:[CalculatorBrain descriptionOfTopOfStack:stack]];
+    
     while ([stack count]) {
         if (description == @"") {
             description = [CalculatorBrain clearParenthesis:[CalculatorBrain descriptionOfTopOfStack:stack]];
@@ -225,7 +227,7 @@
             description = [description stringByAppendingFormat:@", %@", [self descriptionOfTopOfStack:stack]];
         }
     }
-    */
+    
 
     return description;
 }

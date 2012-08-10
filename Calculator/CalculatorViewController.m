@@ -69,12 +69,15 @@
     [self.brain pushVariable:sender.currentTitle];
     self.userIsEnteringANumber = NO;
     self.hasEnteredDot = NO;
-    self.history.text = [CalculatorBrain descriptionOfProgram:[[self brain] program]];
+    self.display.text = sender.currentTitle;
+    //self.history.text = [CalculatorBrain descriptionOfProgram:[[self brain] program]];
 }
 
 - (IBAction)enterPressed {
-    [self.brain pushOperand:[self.display.text doubleValue]];
-    self.userIsEnteringANumber = NO;
+    if (self.userIsEnteringANumber) {
+        [self.brain pushOperand:[self.display.text doubleValue]];
+        self.userIsEnteringANumber = NO;
+    }
     self.hasEnteredDot = NO;
     self.history.text = [CalculatorBrain descriptionOfProgram:[[self brain] program]];
 }
